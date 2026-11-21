@@ -3411,9 +3411,28 @@ public:
         auto *menu = new QMenu(this);
         menu->addAction("打开工作台", this, &Panel::Present)->setIcon(iconTint("focus", kIcon, 16));
         menu->addSeparator();
-        menu->addAction("区域截图", this, [this]{ Dispatch("region"); })->setIcon(iconTint("scan", kIcon, 16));
-        menu->addAction("整屏截图", this, [this]{ Dispatch("screen"); })->setIcon(iconTint("monitor", kIcon, 16));
-        menu->addAction("窗口截图", this, [this]{ Dispatch("window"); })->setIcon(iconTint("focus", kIcon, 16));
+        auto *regionAction = menu->addAction("区域截图", this, [this]{ Dispatch("region"); });
+        regionAction->setIcon(iconTint("scan", kIcon, 16));
+        regionAction->setShortcut(QKeySequence(Qt::Key_F1));
+        auto *screenAction = menu->addAction("整屏截图", this, [this]{ Dispatch("screen"); });
+        screenAction->setIcon(iconTint("monitor", kIcon, 16));
+        screenAction->setShortcut(QKeySequence(Qt::Key_F3));
+        auto *windowAction = menu->addAction("窗口截图", this, [this]{ Dispatch("window"); });
+        windowAction->setIcon(iconTint("focus", kIcon, 16));
+        windowAction->setShortcut(QKeySequence(Qt::Key_F2));
+        // 菜单弹出期间会抓走键盘，X11 全局快捷键收不到按键，这里用应用级快捷键补上；
+        // 菜单关闭时按键由全局抓键接管（不会到达 Qt），因此不会重复触发。
+        const struct { const char *keys; const char *command; } menuShortcuts[] = {
+            {"F1", "region"}, {"F2", "window"}, {"F3", "screen"},
+        };
+        for (const auto &entry : menuShortcuts) {
+            auto *shortcut = new QShortcut(QKeySequence(entry.keys), menu);
+            shortcut->setContext(Qt::ApplicationShortcut);
+            connect(shortcut, &QShortcut::activated, this, [this, menu, entry]{
+                menu->close();
+                Dispatch(entry.command);
+            });
+        }
         menu->addSeparator();
         menu->addAction("美化导出当前截图", this, [this]{ saveDecorated(); })
             ->setIcon(shapeIcon("sparkles", kIcon, 16));
