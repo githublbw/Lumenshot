@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblumenshot_masks.a CMakeFiles/lumenshot_masks.dir/src/masks.cpp.o
-/usr/bin/ranlib liblumenshot_masks.a

@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblumenshot_crop.a CMakeFiles/lumenshot_crop.dir/src/crop.cpp.o
-/usr/bin/ranlib liblumenshot_crop.a
