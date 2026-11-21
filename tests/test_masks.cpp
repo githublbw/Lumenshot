@@ -1,5 +1,6 @@
 #include "masks.h"
 #include <QBuffer>
+#include <QPainter>
 #include <QGuiApplication>
 #include <iostream>
 
@@ -150,5 +151,24 @@ int main(int argc, char **argv)
     edit.setStepTextWidth(0, 80);
     if (edit.stepBounds(0).width() >= originalWidth) return 41;
     if (edit.stepBounds(0).width() < 60) return 42;
+    // 移动文字后换行宽度保持不变、内容移动
+    edit.moveStep(0, QPointF(30, 10));
+    const QImage moved = edit.image();
+    if (moved == wide) return 43;
+    edit.setStepTextWidth(0, 80);
+    if (edit.stepBounds(0).width() < 60 || edit.stepBounds(0).width() > 80) return 44;
+    // paintStep 拖动预览：内容按偏移绘制到外部画布
+    {
+        QImage base = edit.image();
+        QImage before = base.copy();
+        QPainter pv(&base);
+        edit.paintStep(pv, 0, QPointF(60, 10));
+        pv.end();
+        if (base == before) return 45;
+        // 偏移处应出现文字像素，而原位置仍是提交时的样子
+        const QRectF nb = edit.stepBounds(0).translated(60, 10);
+        QImage probe = base.copy(nb.toAlignedRect().adjusted(-4, -4, 4, 4));
+        if (probe == before.copy(nb.toAlignedRect().adjusted(-4, -4, 4, 4))) return 46;
+    }
     std::cout << "Annotation pixels, history and PNG round trip passed\n";
 }

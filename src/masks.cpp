@@ -312,6 +312,135 @@ void Masks::crop(const QRect &area)
     count = steps.size();
 }
 
+// 拖动预览用：把单个标注按偏移重绘到外部画布。
+// 模糊/矩形马赛克的内容来自图片本身，无法平移预览，绘制半透明占位块。
+void Masks::paintStep(QPainter &painter, int index, const QPointF &offset) const
+{
+    if (index < 0 || index >= count) return;
+    Step step = steps.at(index);
+    step.pixels.translate(offset.toPoint());
+    step.line.translate(offset);
+    step.points.translate(offset);
+    painter.save();
+    painter.setRenderHint(QPainter::Antialiasing);
+    if (step.shape == MaskShape::Blur || step.shape == MaskShape::Mosaic) {
+        painter.setOpacity(0.55);
+        painter.fillRect(QRectF(step.pixels), QColor(118, 126, 136));
+        painter.restore();
+        return;
+    }
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(step.color);
+    if (step.shape == MaskShape::Rectangle)
+        painter.fillRect(QRectF(step.pixels), step.color);
+    else if (step.shape == MaskShape::RoundedRect) {
+        const QRectF r(step.pixels);
+        const qreal rad = std::clamp(std::min(r.width(), r.height()) * 0.14, 4.0, 18.0);
+        QColor border = step.color;
+        border.setAlpha(255);
+        painter.setPen(QPen(border, 1.6));
+        painter.setBrush(step.color);
+        painter.drawRoundedRect(r, rad, rad);
+    } else if (step.shape == MaskShape::Bubble) {
+        const QRectF r(step.pixels);
+        const qreal rad = std::clamp(std::min(r.width(), r.height()) * 0.12, 4.0, 16.0);
+        QPainterPath bubble;
+        bubble.addRoundedRect(r, rad, rad);
+        const QPointF target = step.line.p1();
+        const QPointF center = r.center();
+        const QPointF delta = target - center;
+        if (!r.contains(target)) {
+            QPointF wing(-delta.y(), delta.x());
+            const qreal wingLen = std::hypot(wing.x(), wing.y());
+            if (wingLen > 1e-6) wing /= wingLen;
+            qreal t = 1.0;
+            if (delta.x() != 0) t = std::min(t, (r.width() / 2 + 1) / std::abs(delta.x()));
+            if (delta.y() != 0) t = std::min(t, (r.height() / 2 + 1) / std::abs(delta.y()));
+            const QPointF edge = center + delta * t;
+            bubble.moveTo(edge + wing * 8);
+            bubble.lineTo(target + offset);
+            bubble.lineTo(edge - wing * 8);
+        } else {
+            const qreal len = std::hypot(delta.x(), delta.y());
+            const QPointF outward = len > 1e-6 ? delta / len : QPointF(-0.707, -0.707);
+            const QPointF apex = target + outward * 12;
+            bubble.moveTo(target + QPointF(delta.x() > 0 ? -8 : 8, 0));
+            bubble.lineTo(apex + offset);
+            bubble.lineTo(target + QPointF(0, delta.y() > 0 ? -8 : 8));
+        }
+        painter.setPen(QPen(step.color, 1.6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter.setBrush(step.color);
+        painter.drawPath(bubble);
+    } else if (step.shape == MaskShape::Pen) {
+        if (step.points.size() >= 2) {
+            QPainterPath path;
+            path.moveTo(step.points.first());
+            for (int i = 1; i < step.points.size(); ++i) path.lineTo(step.points.at(i));
+            painter.setPen(QPen(step.color, std::max(1, step.size), Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            painter.setBrush(Qt::NoBrush);
+            painter.drawPath(path);
+        }
+    } else if (step.shape == MaskShape::MosaicBrush) {
+        if (step.points.size() >= 2) {
+            QPainterPath path;
+            path.moveTo(step.points.first());
+            for (int i = 1; i < step.points.size(); ++i) path.lineTo(step.points.at(i));
+            painter.setPen(QPen(QColor(150, 158, 168, 150), std::max(4, step.size),
+                                Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            painter.setBrush(Qt::NoBrush);
+            painter.drawPath(path);
+        }
+    } else if (step.shape == MaskShape::Number) {
+        const qreal radius = std::min(step.pixels.width(), step.pixels.height()) / 2.0;
+        const QPointF center = step.pixels.center();
+        const QColor base = step.color;
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(QColor(0, 0, 0, 62));
+        painter.drawEllipse(center + QPointF(0, std::max(1.0, radius * 0.08)),
+                            radius * 0.98, radius * 0.98);
+        QRadialGradient fill(center - QPointF(radius * 0.34, radius * 0.40), radius * 1.45);
+        fill.setColorAt(0.0, base.lighter(134));
+        fill.setColorAt(0.62, base);
+        fill.setColorAt(1.0, base.darker(120));
+        painter.setBrush(fill);
+        painter.drawEllipse(center, radius, radius);
+        painter.setPen(QPen(QColor(255, 255, 255, 78), 1.0));
+        painter.drawEllipse(center, radius - 0.75, radius - 0.75);
+        QFont font;
+        font.setPixelSize(qMax(9, qRound(step.size * 0.56)));
+        font.setBold(true);
+        font.setLetterSpacing(QFont::PercentageSpacing, 102);
+        painter.setFont(font);
+        painter.setPen(qGray(base.rgb()) > 168 ? QColor("#101014") : QColor("#FFFFFF"));
+        painter.drawText(step.pixels, Qt::AlignCenter, step.text);
+    } else if (step.shape == MaskShape::Arrow || step.shape == MaskShape::Line
+               || step.shape == MaskShape::Highlight) {
+        const QColor ink = step.shape == MaskShape::Highlight
+            ? QColor(step.color.red(), step.color.green(), step.color.blue(), 140) : step.color;
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setPen(QPen(ink, std::max(1, step.size), Qt::SolidLine, Qt::RoundCap));
+        painter.drawLine(step.line.p1(), step.line.p2());
+        if (step.shape == MaskShape::Arrow) {
+            const QPointF direction = (step.line.p2() - step.line.p1()) / step.line.length();
+            const qreal length = std::min(step.line.length(), step.size * 11.0);
+            const QPointF base = step.line.p2() - length * direction;
+            const qreal half = length * 0.40;
+            const QPointF wing(-direction.y() * half, direction.x() * half);
+            painter.setPen(Qt::NoPen);
+            painter.setBrush(step.color);
+            painter.drawPolygon(QPolygonF{step.line.p2(), base + wing, base - wing});
+        }
+    } else if (step.shape == MaskShape::Text) {
+        QFont font;
+        font.setPixelSize(step.size);
+        painter.setFont(font);
+        painter.setPen(step.color);
+        painter.drawText(QRectF(step.pixels), Qt::AlignLeft | Qt::AlignTop | Qt::TextWrapAnywhere,
+                         step.text);
+    }
+    painter.restore();
+}
+
 void Masks::rebuild()
 {
     output = original;
@@ -421,7 +550,9 @@ bool Masks::moveStep(int index, const QPointF &delta)
         topLeft.setX(std::clamp(topLeft.x(), 0, std::max(0, original.width() - 1)));
         topLeft.setY(std::clamp(topLeft.y(), 0, std::max(0, original.height() - 1)));
         const QPoint shift = topLeft - step.pixels.topLeft();
-        step.pixels = QRect(topLeft, original.rect().bottomRight());
+        // 保持换行宽度不变（原实现会重置为图片剩余宽度，导致移动后重新换行）
+        step.pixels = QRect(topLeft, QSize(step.pixels.width(),
+                                           std::max(1, original.height() - topLeft.y())));
         step.line.translate(shift);
     } else {
         if (step.pixels.left() + offset.x() < 0) offset.rx() = -step.pixels.left();

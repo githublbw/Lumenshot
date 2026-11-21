@@ -18,6 +18,8 @@ public:
     void crop(const QRect &area);
     int stepCount() const { return int(count); }
     MaskShape stepShape(int index) const;
+    // 拖动预览：把指定标注按偏移绘制到外部画布（模糊/马赛克绘制占位块）
+    void paintStep(QPainter &painter, int index, const QPointF &offset) const;
     QRectF stepBounds(int index) const;
     int hitTest(const QPointF &point) const;
     int maxNumberText() const;
