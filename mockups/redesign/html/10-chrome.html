@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>10 · 液态金属 Chrome</title><style>
+@font-face{font-family:"Inter";src:url("../fonts/Inter-400.ttf") format("truetype");font-weight:400}
+@font-face{font-family:"Inter";src:url("../fonts/Inter-500.ttf") format("truetype");font-weight:500}
+@font-face{font-family:"Inter";src:url("../fonts/Inter-600.ttf") format("truetype");font-weight:600}
+@font-face{font-family:"Inter";src:url("../fonts/Inter-700.ttf") format("truetype");font-weight:700}
+@font-face{font-family:"JetBrains Mono";src:url("../fonts/JetBrainsMono-400.ttf") format("truetype");font-weight:400}
+@font-face{font-family:"JetBrains Mono";src:url("../fonts/JetBrainsMono-500.ttf") format("truetype");font-weight:500}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1600px;height:1180px;overflow:hidden;background:#050608}
+body{font-family:"Inter","Noto Sans CJK SC",system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+svg{display:block;overflow:visible}
+.board{position:relative;width:1600px;height:1180px;padding:42px 48px 34px;color:#EDEDF0;overflow:hidden;
+  background:#08090B;--accent:#A3F0CE}
+.board::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(720px 460px at 8% -6%,var(--glow),transparent 68%),
+             radial-gradient(760px 520px at 104% 106%,var(--glow2),transparent 70%);}
+.board::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.board > *{position:relative;z-index:1}
+.stack{position:relative;display:inline-grid;place-items:center}
+.stack>svg{grid-area:1/1}
+
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:56px;height:158px}
+.eyebrow{display:flex;align-items:center;gap:9px;font-family:"JetBrains Mono",monospace;font-size:10px;
+  letter-spacing:.16em;color:#7C7C86;text-transform:uppercase;margin-bottom:13px}
+.eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.eyebrow b{color:#C9C9D0;font-weight:500}
+.titleline{display:flex;align-items:baseline;gap:16px;margin-bottom:10px}
+.idx{font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.08em;color:var(--accent);
+  border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:5px;padding:3px 7px;
+  transform:translateY(-12px)}
+h1{font-size:58px;line-height:1;font-weight:600;letter-spacing:-.035em;color:#F6F6F8}
+.en{font-family:"Inter",sans-serif;font-size:23px;font-weight:400;letter-spacing:.02em;color:#77777F}
+.tagline{font-size:17px;line-height:1.5;color:#B0B0B8;font-weight:400;letter-spacing:.005em}
+.head-right{width:520px;padding-top:6px}
+.desc{font-size:12.5px;line-height:1.85;color:#8C8C96;letter-spacing:.01em}
+.palette{display:flex;gap:18px;margin-top:19px}
+.sw{display:flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:9.5px;color:#8E8E98;letter-spacing:.04em}
+.sw i{width:12px;height:12px;border-radius:3px;display:block;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+
+.main{display:grid;grid-template-columns:800px 1fr;gap:28px;height:638px;margin-top:6px}
+.app-col{display:flex;flex-direction:column;gap:12px}
+.mini-label{display:flex;align-items:center;justify-content:space-between;font-family:"JetBrains Mono",monospace;
+  font-size:9px;letter-spacing:.16em;color:#6F6F78;text-transform:uppercase}
+.mini-label span:last-child{color:#55555E}
+.app-scale{width:800px;height:600px;position:relative}
+.app-scale .app{transform:scale(1.31);transform-origin:top left}
+
+/* App */
+.app{position:relative;width:610px;height:446px;border-radius:16px;overflow:hidden;color:#EDEDF0;
+  background:radial-gradient(120% 95% at 50% 0%,#111318 0%,#0A0B0E 56%,#08090B 100%);
+  border:1px solid rgba(255,255,255,.085);
+  box-shadow:0 44px 100px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.055)}
+.app-top{position:absolute;left:14px;right:14px;top:12px;height:34px;display:flex;align-items:center;gap:8px;
+  padding:0 9px 0 9px;border-radius:12px;background:rgba(20,21,25,.74);border:1px solid rgba(255,255,255,.065);
+  backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:8px}
+.brand-name{font-size:11.5px;font-weight:500;letter-spacing:.01em;color:#E4E4EA}
+.mark{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;color:var(--accent);
+  background:rgba(163,240,206,.08);border:1px solid rgba(163,240,206,.16)}
+.status{display:flex;align-items:center;gap:5px;font-size:9.5px;color:#7E7E88;margin-left:5px}
+.status i{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 7px var(--accent);opacity:.85}
+.grow{flex:1}
+.app-ghost{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#8D8D97;background:transparent;border:0}
+.vsep{width:1px;height:14px;background:rgba(255,255,255,.08);margin:0 3px}
+.wctl{display:flex;align-items:center;gap:12px;padding-right:3px}
+.wctl span{display:block;position:relative;width:11px;height:11px;opacity:.7}
+.wc-min::before{content:"";position:absolute;left:1px;right:1px;top:5px;height:1px;background:#B6B6C0}
+.wc-max::before{content:"";position:absolute;inset:1px;border:1px solid #B6B6C0;border-radius:1.5px}
+.wc-close::before,.wc-close::after{content:"";position:absolute;left:1px;right:1px;top:5px;height:1px;background:#B6B6C0;transform:rotate(45deg)}
+.wc-close::after{transform:rotate(-45deg)}
+
+.stage{position:absolute;left:14px;right:14px;top:58px;bottom:76px;display:grid;place-items:center}
+.empty{display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center}
+.empty-orb{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;color:var(--accent);
+  background:rgba(163,240,206,.055);border:1px solid rgba(163,240,206,.14);margin-bottom:5px}
+.empty h3{font-size:16.5px;font-weight:500;letter-spacing:.01em;color:#EDEDF2}
+.empty p{font-size:10.5px;color:#7E7E88;display:flex;align-items:center;gap:4px}
+kbd{font-family:"Inter",sans-serif;font-size:9px;color:#9D9DA7;background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.085);border-radius:4px;padding:1.5px 5px;line-height:1.2}
+kbd + kbd{margin-left:1px}
+
+.dock{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);height:46px;display:flex;align-items:center;
+  gap:2px;padding:0 7px;border-radius:14px;background:rgba(18,19,23,.9);border:1px solid rgba(255,255,255,.07);
+  backdrop-filter:blur(20px);box-shadow:0 18px 40px rgba(0,0,0,.5);white-space:nowrap}
+.dock-btn{height:32px;min-width:32px;padding:0 7px;border:0;border-radius:9px;background:transparent;color:#A7A7B0;
+  display:flex;align-items:center;justify-content:center;gap:5px;font-family:inherit;font-size:10.5px}
+.dock-btn.labeled{padding:0 9px 0 8px}
+.dock-btn.icon{width:32px;padding:0}
+.dock-btn.active{color:var(--accent);background:rgba(163,240,206,.09)}
+.sep{width:1px;height:16px;background:rgba(255,255,255,.08);margin:0 5px;flex:none}
+
+/* Side column */
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.hero{position:relative;display:flex;align-items:center;gap:22px;height:158px;padding:0 24px;border-radius:20px;
+  background:linear-gradient(120deg,rgba(255,255,255,.035),rgba(255,255,255,.008));
+  border:1px solid rgba(255,255,255,.06);overflow:hidden}
+.hero::after{content:"";position:absolute;right:-50px;top:-90px;width:250px;height:250px;border-radius:50%;
+  background:radial-gradient(circle,var(--glow),transparent 68%)}
+.hero-tile{width:104px;height:104px;border-radius:28px;display:grid;place-items:center;flex:none;
+  color:var(--accent);background:linear-gradient(150deg,rgba(255,255,255,.07),rgba(255,255,255,.015));
+  border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 18px 36px rgba(0,0,0,.35)}
+.hero-meta{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hero-meta .kicker{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.16em;color:#6E6E77}
+.hero-meta b{font-size:19px;font-weight:500;letter-spacing:-.01em;color:#F1F1F5}
+.hero-meta em{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:10px;color:#7E7E88;letter-spacing:.02em}
+.hero-no{position:absolute;right:20px;bottom:2px;font-size:80px;line-height:1;font-weight:600;color:rgba(255,255,255,.035);letter-spacing:-.05em}
+
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;padding:6px 4px}
+.spec{display:flex;align-items:center;justify-content:space-between;gap:12px;height:33px;
+  border-bottom:1px solid rgba(255,255,255,.045)}
+.spec span{font-size:10.5px;color:#7E7E88;letter-spacing:.02em}
+.spec b{font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:400;color:#CFCFD6;letter-spacing:.02em}
+
+.states{display:flex;gap:9px;align-items:stretch;height:64px}
+.state{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;
+  background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.055);color:#9B9BA5;
+  font-size:10px;letter-spacing:.04em}
+.state.hover{background:rgba(255,255,255,.05);color:#D6D6DD}
+.state.on{color:var(--accent);background:rgba(163,240,206,.10);border-color:rgba(163,240,206,.22)}
+.state em{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:8.5px;color:#66666F;letter-spacing:.08em}
+
+.keywords{display:flex;gap:8px;flex-wrap:wrap}
+.kw{font-size:10px;letter-spacing:.06em;color:#8A8A94;padding:5px 10px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.018)}
+.kw:first-child{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 24%,transparent);
+  background:color-mix(in srgb,var(--accent) 7%,transparent)}
+
+/* Icon sheet */
+.sheet{margin-top:20px;display:flex;flex-direction:column;gap:11px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between}
+.sheet-head .t{display:flex;align-items:baseline;gap:10px}
+.sheet-head b{font-size:13px;font-weight:500;color:#E2E2E8;letter-spacing:.02em}
+.sheet-head span{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.14em;color:#6D6D76;text-transform:uppercase}
+.grid16{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}
+.tile{position:relative;height:108px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:9px;border-radius:18px;background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.055);
+  transition:background .2s,border-color .2s}
+.tile-no{position:absolute;top:8px;left:10px;font-family:"JetBrains Mono",monospace;font-size:8px;
+  letter-spacing:.1em;color:rgba(255,255,255,.16)}
+.tile-ic{display:grid;place-items:center;height:38px;color:#C9C9D2}
+.tile-label{font-size:10px;color:#8B8B95;letter-spacing:.05em}
+.tile:hover .tile-ic{color:var(--accent)}
+
+.foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;
+  font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.16em;color:#4E4E57;text-transform:uppercase}
+.foot .mid{color:#5C5C66}
+.foot span{white-space:nowrap}
+.foot{gap:24px}
+
+.detail{display:flex;gap:20px;height:220px;padding:18px;border-radius:18px;
+  background:linear-gradient(120deg,rgba(255,255,255,.032),rgba(255,255,255,.008));
+  border:1px solid rgba(255,255,255,.055);overflow:hidden}
+.detail-art{position:relative;width:150px;height:150px;flex:none;border-radius:18px;display:grid;place-items:center;
+  background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.06)}
+.detail-ic{color:var(--accent);display:grid;place-items:center;filter:drop-shadow(0 0 18px var(--glow))}
+.detail-tag{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:"JetBrains Mono",monospace;
+  font-size:7px;letter-spacing:.13em;color:#5E5E68;text-transform:uppercase}
+.detail-copy{display:flex;flex-direction:column;justify-content:center;gap:10px;min-width:0}
+.detail-copy .kicker{font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.16em;color:#6E6E77;
+  text-transform:uppercase;margin-bottom:1px}
+.note{display:flex;gap:9px;align-items:flex-start;font-size:10.5px;line-height:1.5;color:#9A9AA4}
+.note em{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:8px;color:var(--accent);
+  opacity:.65;padding-top:2px;flex:none}
+
+.c10 .tile{border-radius:20px;border:1px solid rgba(255,255,255,.10);
+  background:radial-gradient(120% 100% at 30% 0%,#1B1E22,#0A0B0D 62%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 16px 34px rgba(0,0,0,.48)}
+.c10 .tile-ic{filter:drop-shadow(0 1px 1px rgba(0,0,0,.85)) drop-shadow(0 0 7px rgba(163,240,206,.25))}
+.c10 .mark{background:linear-gradient(180deg,#1D2125,#0C0E10);border-color:rgba(255,255,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 4px 10px rgba(0,0,0,.45)}
+.c10 .dock{background:linear-gradient(180deg,#1A1D21,#0D0F11 55%,#08090B);border:1px solid rgba(255,255,255,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 22px 44px rgba(0,0,0,.55)}
+.c10 .dock-btn.active{background:linear-gradient(180deg,rgba(223,255,242,.22),rgba(163,240,206,.05));color:#EAFFF7;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 18px rgba(163,240,206,.2)}
+.c10 .empty-orb{background:radial-gradient(100% 100% at 30% 0%,#20252A,#0A0B0D);
+  border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 60px rgba(163,240,206,.1)}
+.c10 .detail-art{background:radial-gradient(120% 100% at 30% 0%,#1B1E22,#0A0B0D 62%);border-color:rgba(255,255,255,.10)}
+.c10 .state.on{background:linear-gradient(180deg,rgba(223,255,242,.22),rgba(163,240,206,.05));color:#EAFFF7;border-color:rgba(255,255,255,.3)}
+</style></head>
+<body>
+<div class="board c10" style="--accent:#DFFFF2;--accent2:#A3F0CE;--glow:rgba(223,255,242,.11);--glow2:rgba(130,150,160,.08)">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <linearGradient id="extrudeGrad" gradientUnits="userSpaceOnUse" x1="1" y1="1" x2="23" y2="23">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset=".42" stop-color="#DFFFF2"/>
+      <stop offset=".72" stop-color="#9FE8C8"/><stop offset="1" stop-color="#6E8A80"/>
+    </linearGradient>
+    <linearGradient id="chromeGrad" gradientUnits="userSpaceOnUse" x1="1" y1="1" x2="23" y2="23">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset=".28" stop-color="#E9FFF7"/>
+      <stop offset=".52" stop-color="#A3F0CE"/><stop offset=".74" stop-color="#DDFFF2"/>
+      <stop offset="1" stop-color="#67737A"/>
+    </linearGradient>
+  </defs></svg>
+
+  <header class="head">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>Lumenshot · Icon System <b>/ 2026</b></div>
+      <div class="titleline"><span class="idx">10</span><h1>液态金属</h1><span class="en">Chrome</span></div>
+      <p class="tagline">让图标像液态金属一样反光。</p>
+    </div>
+    <div class="head-right">
+      <p class="desc">描边用银白→薄荷→深灰的金属渐变，叠 1px 高光与 10px 冷光；激活态整枚变成镜面。灵感来自 21st.dev 的 shiny button 与金属卡片。</p>
+      <div class="palette"><span class="sw"><i style="background:#DFFFF2"></i>#DFFFF2</span><span class="sw"><i style="background:#A3F0CE"></i>#A3F0CE</span><span class="sw"><i style="background:#7E8A93"></i>#7E8A93</span><span class="sw"><i style="background:#14171A"></i>#14171A</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="app-col">
+      <div class="mini-label"><span>In Context / 真实界面</span><span>610 × 446</span></div>
+      <div class="app-scale">
+        <div class="app">
+          <div class="app-top">
+            <div class="brand"><span class="mark"><svg class="ic chrome" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><circle cx="12" cy="12" r="9.4"/><path d="m14.31 8 5.42 9.39"/><path d="M9.69 8h11.48"/><path d="m7.38 12 5.74-9.94"/><path d="M9.69 16 3.95 6.06"/><path d="M14.31 16H2.83"/><path d="m16.62 12-5.74 9.94"/></svg></span><span class="brand-name">Lumenshot</span></div>
+            <span class="status"><i></i>就绪</span>
+            <span class="grow"></span>
+            <span class="app-ghost"><svg class="ic chrome" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M4 7h16M4 12h16M4 17h10"/></svg></span>
+            <span class="vsep"></span>
+            <div class="wctl"><span class="wc-min"></span><span class="wc-max"></span><span class="wc-close"></span></div>
+          </div>
+          <div class="stage">
+            <div class="empty">
+              <div class="empty-orb"><svg class="ic chrome" viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M3.5 9V6.5a3 3 0 0 1 3-3H9"/><path d="M15 3.5h2.5a3 3 0 0 1 3 3V9"/><path d="M20.5 15v2.5a3 3 0 0 1-3 3H15"/><path d="M9 20.5H6.5a3 3 0 0 1-3-3V15"/><circle cx="12" cy="12" r="2.4"/></svg></div>
+              <h3>还没有截图</h3>
+              <p>选择一种方式开始，或按 <kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>A</kbd></p>
+            </div>
+          </div>
+          <div class="dock">
+            <button class="dock-btn labeled active"><svg class="ic chrome" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M3.5 9V6.5a3 3 0 0 1 3-3H9"/><path d="M15 3.5h2.5a3 3 0 0 1 3 3V9"/><path d="M20.5 15v2.5a3 3 0 0 1-3 3H15"/><path d="M9 20.5H6.5a3 3 0 0 1-3-3V15"/><circle cx="12" cy="12" r="2.4"/></svg><span>区域</span></button>
+            <button class="dock-btn labeled"><svg class="ic chrome" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M3 9h18"/><circle cx="6.1" cy="6.75" r=".55" fill="currentColor" stroke="none"/><circle cx="8.1" cy="6.75" r=".55" fill="currentColor" stroke="none"/><circle cx="10.1" cy="6.75" r=".55" fill="currentColor" stroke="none"/><rect x="7" y="12" width="10" height="4.8" rx="1"/></svg><span>窗口</span></button>
+            <button class="dock-btn labeled"><svg class="ic chrome" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="2.5" y="4" width="19" height="13" rx="2.5"/><path d="M12 17v3.5"/><path d="M8 20.5h8"/></svg><span>整屏</span></button>
+            <span class="sep"></span>
+            <button class="dock-btn icon"><svg class="ic chrome" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="3.5" y="6" width="17" height="12" rx="2.5"/></svg></button>
+            <button class="dock-btn icon"><svg class="ic chrome" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><circle cx="12" cy="12" r="8.5"/></svg></button>
+            <button class="dock-btn icon"><svg class="ic chrome" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M7 17 17 7"/><path d="M8.5 7H17v8.5"/></svg></button>
+            <button class="dock-btn icon"><svg class="ic chrome" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M5 6.5v-2h14v2"/><path d="M12 4.5v15"/><path d="M9 19.5h6"/></svg></button>
+            <button class="dock-btn icon"><svg class="ic chrome" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><circle cx="9.2" cy="12" r="5.7"/><circle cx="14.8" cy="12" r="5.7"/></svg></button>
+            <button class="dock-btn icon"><svg class="ic chrome" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M3.5 9.17h17M3.5 14.83h17M9.17 3.5v17M14.83 3.5v17"/></svg></button>
+            <span class="sep"></span>
+            <button class="dock-btn icon"><svg class="ic chrome" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5 5 0 0 1 0 10H10"/></svg></button>
+            <button class="dock-btn icon"><svg class="ic chrome" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5 5 0 0 0 0 10H14"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="hero">
+        <div class="hero-tile"><svg class="ic chrome" viewBox="0 0 24 24" width="66" height="66" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><circle cx="12" cy="12" r="9.4"/><path d="m14.31 8 5.42 9.39"/><path d="M9.69 8h11.48"/><path d="m7.38 12 5.74-9.94"/><path d="M9.69 16 3.95 6.06"/><path d="M14.31 16H2.83"/><path d="m16.62 12-5.74 9.94"/></svg></div>
+        <div class="hero-meta">
+          <span class="kicker">Primary Mark</span>
+          <b>光圈 · Aperture</b>
+          <em>24 grid / metal gradient</em>
+        </div>
+        <span class="hero-no">10</span>
+      </div>
+      <div class="specs"><div class="spec"><span>金属渐变</span><b>4 段</b></div><div class="spec"><span>高光</span><b>1 px</b></div><div class="spec"><span>冷光</span><b>10 px</b></div><div class="spec"><span>激活</span><b>镜面</b></div><div class="spec"><span>反射</span><b>对角</b></div><div class="spec"><span>圆角</span><b>20 px</b></div></div>
+      <div class="states">
+        <span class="state"><em>01</em><svg class="ic chrome" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="3.5" y="6" width="17" height="12" rx="2.5"/></svg>默认</span>
+        <span class="state hover"><em>02</em><svg class="ic chrome" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="3.5" y="6" width="17" height="12" rx="2.5"/></svg>悬停</span>
+        <span class="state on"><em>03</em><svg class="ic chrome" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="3.5" y="6" width="17" height="12" rx="2.5"/></svg>激活</span>
+      </div>
+      <div class="keywords"><span class="kw">金属</span><span class="kw">镜面</span><span class="kw">冷光</span><span class="kw">奢华</span></div>
+      <div class="detail">
+        <div class="detail-art">
+          <span class="detail-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="88" height="88" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><circle cx="12" cy="12" r="9.4"/><path d="m14.31 8 5.42 9.39"/><path d="M9.69 8h11.48"/><path d="m7.38 12 5.74-9.94"/><path d="M9.69 16 3.95 6.06"/><path d="M14.31 16H2.83"/><path d="m16.62 12-5.74 9.94"/></svg></span>
+          <span class="detail-tag">Specular</span>
+        </div>
+        <div class="detail-copy">
+          <span class="kicker">Signature / 细节</span>
+          <div class="note"><em>01</em><span>四段金属渐变制造出体积与反射</span></div><div class="note"><em>02</em><span>高光放在 28% 处最接近真实镜面</span></div><div class="note"><em>03</em><span>10px 冷光让金属在纯黑上不发脏</span></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <section class="sheet">
+    <div class="sheet-head">
+      <div class="t"><b>完整图标组</b><span>16 icons / 24 × 24 grid</span></div>
+      <span>02 尺寸：34 px 展示 · 15–17 px 实用</span>
+    </div>
+    <div class="grid16">
+      <div class="tile">
+        <span class="tile-no">01</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><circle cx="12" cy="12" r="9.4"/><path d="m14.31 8 5.42 9.39"/><path d="M9.69 8h11.48"/><path d="m7.38 12 5.74-9.94"/><path d="M9.69 16 3.95 6.06"/><path d="M14.31 16H2.83"/><path d="m16.62 12-5.74 9.94"/></svg></div>
+        <span class="tile-label">主标识</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">02</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M3.5 9V6.5a3 3 0 0 1 3-3H9"/><path d="M15 3.5h2.5a3 3 0 0 1 3 3V9"/><path d="M20.5 15v2.5a3 3 0 0 1-3 3H15"/><path d="M9 20.5H6.5a3 3 0 0 1-3-3V15"/><circle cx="12" cy="12" r="2.4"/></svg></div>
+        <span class="tile-label">区域截图</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">03</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M3 9h18"/><circle cx="6.1" cy="6.75" r=".55" fill="currentColor" stroke="none"/><circle cx="8.1" cy="6.75" r=".55" fill="currentColor" stroke="none"/><circle cx="10.1" cy="6.75" r=".55" fill="currentColor" stroke="none"/><rect x="7" y="12" width="10" height="4.8" rx="1"/></svg></div>
+        <span class="tile-label">窗口截图</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">04</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="2.5" y="4" width="19" height="13" rx="2.5"/><path d="M12 17v3.5"/><path d="M8 20.5h8"/></svg></div>
+        <span class="tile-label">整屏截图</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">05</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="3.5" y="6" width="17" height="12" rx="2.5"/></svg></div>
+        <span class="tile-label">矩形</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">06</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><circle cx="12" cy="12" r="8.5"/></svg></div>
+        <span class="tile-label">椭圆</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">07</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M7 17 17 7"/><path d="M8.5 7H17v8.5"/></svg></div>
+        <span class="tile-label">箭头</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">08</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M5 6.5v-2h14v2"/><path d="M12 4.5v15"/><path d="M9 19.5h6"/></svg></div>
+        <span class="tile-label">文字</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">09</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><circle cx="9.2" cy="12" r="5.7"/><circle cx="14.8" cy="12" r="5.7"/></svg></div>
+        <span class="tile-label">马赛克</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">10</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M3.5 9.17h17M3.5 14.83h17M9.17 3.5v17M14.83 3.5v17"/></svg></div>
+        <span class="tile-label">网格</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">11</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5 5 0 0 1 0 10H10"/></svg></div>
+        <span class="tile-label">撤销</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">12</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5 5 0 0 0 0 10H14"/></svg></div>
+        <span class="tile-label">重做</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">13</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M12 17v4.5"/><path d="M9 10.6V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3.6a2 2 0 0 0 .59 1.42l1.82 1.82A1 1 0 0 1 17 16H7a1 1 0 0 1-.41-1.76l1.82-1.82A2 2 0 0 0 9 10.6Z"/></svg></div>
+        <span class="tile-label">置顶</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">14</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><rect x="8.5" y="8.5" width="12" height="12" rx="2.2"/><path d="M15.5 8.5V5.7a2.2 2.2 0 0 0-2.2-2.2H5.7a2.2 2.2 0 0 0-2.2 2.2v7.6a2.2 2.2 0 0 0 2.2 2.2h2.8"/></svg></div>
+        <span class="tile-label">复制</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">15</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M12 3.5v11.5"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4 19.5h16"/></svg></div>
+        <span class="tile-label">保存</span>
+      </div>
+      <div class="tile">
+        <span class="tile-no">16</span>
+        <div class="tile-ic"><svg class="ic chrome" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="url(#chromeGrad)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="" ><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+        <span class="tile-label">菜单</span>
+      </div></div>
+  </section>
+
+  <footer class="foot">
+    <span>Lumenshot · Icon System / 10 Directions</span>
+    <span class="mid">Designed for dark UI · Mint #DFFFF2</span>
+    <span>10 / 10 · Chrome</span>
+  </footer>
+</div>
+</body></html>

@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+Name=Lumenshot 截图工作台
+Comment=区域截图、复制和保存
+Exec=lumenshot
+Icon=lumenshot
+Terminal=false
+Categories=Graphics;Utility;
+StartupWMClass=lumenshot
+Actions=Region;Settings;
+
+[Desktop Action Region]
+Name=区域截图
+Exec=lumenshot --capture region
+
+[Desktop Action Settings]
+Name=设置
+Exec=lumenshot --settings

@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>05 · 等轴测 Isometric</title><style>
+@font-face{font-family:"Inter";src:url("../fonts/Inter-400.ttf") format("truetype");font-weight:400}
+@font-face{font-family:"Inter";src:url("../fonts/Inter-500.ttf") format("truetype");font-weight:500}
+@font-face{font-family:"Inter";src:url("../fonts/Inter-600.ttf") format("truetype");font-weight:600}
+@font-face{font-family:"Inter";src:url("../fonts/Inter-700.ttf") format("truetype");font-weight:700}
+@font-face{font-family:"JetBrains Mono";src:url("../fonts/JetBrainsMono-400.ttf") format("truetype");font-weight:400}
+@font-face{font-family:"JetBrains Mono";src:url("../fonts/JetBrainsMono-500.ttf") format("truetype");font-weight:500}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1600px;height:1180px;overflow:hidden;background:#050608}
+body{font-family:"Inter","Noto Sans CJK SC",system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.board{position:relative;width:1600px;height:1180px;padding:42px 48px 34px;color:#EDEDF0;overflow:hidden;background:#08090B;--accent:#A3F0CE}
+.board::before{content:"";position:absolute;inset:0;pointer-events:none;background:
+  radial-gradient(720px 440px at 8% -6%,rgba(163,240,206,.085),transparent 68%),
+  radial-gradient(720px 480px at 104% 108%,rgba(127,170,255,.055),transparent 70%)}
+.board::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.board>*{position:relative;z-index:1}
+svg{display:block;overflow:visible}
+
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:56px;height:158px}
+.eyebrow{display:flex;align-items:center;gap:9px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;color:#7C7C86;text-transform:uppercase;margin-bottom:13px}
+.eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.eyebrow b{color:#C9C9D0;font-weight:500}
+.titleline{display:flex;align-items:baseline;gap:16px;margin-bottom:11px}
+.idx{font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.08em;color:var(--accent);border:1px solid rgba(163,240,206,.30);border-radius:5px;padding:3px 7px;transform:translateY(-11px)}
+h1{font-size:54px;line-height:1;font-weight:600;letter-spacing:-.035em;color:#F6F6F8}
+.en{font-size:22px;font-weight:400;letter-spacing:.02em;color:#77777F}
+.tagline{font-size:16.5px;line-height:1.5;color:#B0B0B8;letter-spacing:.005em}
+.grammar{margin-top:9px;font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.12em;color:#6F6F78;text-transform:uppercase}
+.head-right{width:512px;padding-top:4px}
+.desc{font-size:12.5px;line-height:1.85;color:#8C8C96;letter-spacing:.01em}
+.palette{display:flex;align-items:center;gap:16px;margin-top:14px}
+.palette .plabel{font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.14em;color:#5E5E68;text-transform:uppercase}
+.sw{display:flex;align-items:center;gap:7px;font-family:"JetBrains Mono",monospace;font-size:9px;color:#8E8E98;letter-spacing:.04em}
+.sw i{width:11px;height:11px;border-radius:3px;display:block;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.kwrow{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
+.kw{font-size:9.5px;letter-spacing:.06em;color:#8A8A94;padding:4px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.018)}
+.kw:first-child{color:var(--accent);border-color:rgba(163,240,206,.24);background:rgba(163,240,206,.07)}
+
+.main{display:grid;grid-template-columns:800px 1fr;gap:28px;height:638px;margin-top:6px}
+.app-col{display:flex;flex-direction:column;gap:12px}
+.mini-label{display:flex;align-items:center;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.16em;color:#6F6F78;text-transform:uppercase}
+.mini-label span:last-child{color:#55555E}
+.app-scale{width:800px;height:600px;position:relative}
+.app-scale .app{transform:scale(1.31);transform-origin:top left}
+.app{position:relative;width:610px;height:446px;border-radius:16px;overflow:hidden;color:#EDEDF0;background:radial-gradient(120% 95% at 50% 0%,#111318 0%,#0A0B0E 56%,#08090B 100%);border:1px solid rgba(255,255,255,.085);box-shadow:0 44px 100px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.055)}
+.app-top{position:absolute;left:14px;right:14px;top:12px;height:34px;display:flex;align-items:center;gap:8px;padding:0 9px;border-radius:12px;background:rgba(20,21,25,.74);border:1px solid rgba(255,255,255,.065);backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:8px}
+.brand-name{font-size:11.5px;font-weight:500;letter-spacing:.01em;color:#E4E4EA}
+.mark{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;color:var(--accent);background:rgba(163,240,206,.08);border:1px solid rgba(163,240,206,.16)}
+.status{display:flex;align-items:center;gap:5px;font-size:9.5px;color:#7E7E88;margin-left:5px}
+.status i{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 7px var(--accent);opacity:.85}
+.grow{flex:1}
+.app-ghost{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#8D8D97;background:transparent;border:0}
+.vsep{width:1px;height:14px;background:rgba(255,255,255,.08);margin:0 3px}
+.wctl{display:flex;align-items:center;gap:12px;padding-right:3px}
+.wctl span{display:block;position:relative;width:11px;height:11px;opacity:.7}
+.wc-min::before{content:"";position:absolute;left:1px;right:1px;top:5px;height:1px;background:#B6B6C0}
+.wc-max::before{content:"";position:absolute;inset:1px;border:1px solid #B6B6C0;border-radius:1.5px}
+.wc-close::before,.wc-close::after{content:"";position:absolute;left:1px;right:1px;top:5px;height:1px;background:#B6B6C0;transform:rotate(45deg)}
+.wc-close::after{transform:rotate(-45deg)}
+.stage{position:absolute;left:14px;right:14px;top:58px;bottom:76px;display:grid;place-items:center}
+.empty{display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center}
+.empty-orb{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;color:var(--accent);background:rgba(163,240,206,.055);border:1px solid rgba(163,240,206,.14);margin-bottom:5px}
+.empty h3{font-size:16.5px;font-weight:500;letter-spacing:.01em;color:#EDEDF2}
+.empty p{font-size:10.5px;color:#7E7E88;display:flex;align-items:center;gap:4px}
+kbd{font-family:"Inter",sans-serif;font-size:9px;color:#9D9DA7;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.085);border-radius:4px;padding:1.5px 5px;line-height:1.2}
+kbd+kbd{margin-left:1px}
+.dock{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);height:46px;display:flex;align-items:center;gap:2px;padding:0 7px;border-radius:14px;background:rgba(18,19,23,.9);border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(20px);box-shadow:0 18px 40px rgba(0,0,0,.5);white-space:nowrap}
+.dock-btn{height:32px;min-width:32px;padding:0 7px;border:0;border-radius:9px;background:transparent;color:#A7A7B0;display:flex;align-items:center;justify-content:center;gap:5px;font-family:inherit;font-size:10.5px}
+.dock-btn.labeled{padding:0 9px 0 8px}
+.dock-btn.icon{width:32px;padding:0}
+.dock-btn.active{color:var(--accent);background:rgba(163,240,206,.09)}
+.sep{width:1px;height:16px;background:rgba(255,255,255,.08);margin:0 5px;flex:none}
+
+.side{display:flex;flex-direction:column;gap:11px;min-width:0}
+.hero{position:relative;display:flex;align-items:center;gap:22px;height:150px;padding:0 24px;border-radius:20px;background:linear-gradient(120deg,rgba(255,255,255,.035),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);overflow:hidden}
+.hero::after{content:"";position:absolute;right:-50px;top:-90px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(163,240,206,.10),transparent 68%)}
+.hero-tile{width:100px;height:100px;border-radius:26px;display:grid;place-items:center;flex:none;color:var(--accent);background:linear-gradient(150deg,rgba(255,255,255,.07),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 18px 36px rgba(0,0,0,.35)}
+.hero-meta{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hero-meta .kicker{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.16em;color:#6E6E77;text-transform:uppercase}
+.hero-meta b{font-size:18px;font-weight:500;letter-spacing:-.01em;color:#F1F1F5}
+.hero-meta em{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:9.5px;color:#7E7E88;letter-spacing:.02em;line-height:1.7}
+.hero-no{position:absolute;right:20px;bottom:2px;font-size:76px;line-height:1;font-weight:600;color:rgba(255,255,255,.035);letter-spacing:-.05em}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;padding:2px 4px}
+.spec{display:flex;align-items:center;justify-content:space-between;gap:12px;height:32px;border-bottom:1px solid rgba(255,255,255,.045)}
+.spec span{font-size:10.5px;color:#7E7E88;letter-spacing:.02em}
+.spec b{font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:400;color:#CFCFD6;letter-spacing:.02em}
+
+.sil{display:flex;flex-direction:column;gap:6px}
+.sil-head{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.14em;color:#6A6A73;text-transform:uppercase}
+.sil-head span:last-child{color:#4F4F58}
+.sil-row{height:31px;border-radius:8px;display:flex;align-items:center;justify-content:space-around;padding:0 8px}
+.sil-dark{background:#000;color:#fff}
+.sil-light{background:#F3F3EE;color:#08090A}
+.detail{display:flex;gap:18px;height:216px;padding:17px;border-radius:18px;background:linear-gradient(120deg,rgba(255,255,255,.03),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.055);overflow:hidden}
+.detail-art{position:relative;width:142px;height:142px;flex:none;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.06)}
+.detail-ic{color:var(--accent);display:grid;place-items:center;filter:drop-shadow(0 0 16px rgba(163,240,206,.16))}
+.detail-tag{position:absolute;bottom:7px;left:0;right:0;text-align:center;font-family:"JetBrains Mono",monospace;font-size:7px;letter-spacing:.13em;color:#5E5E68;text-transform:uppercase}
+.detail-copy{display:flex;flex-direction:column;justify-content:center;gap:9px;min-width:0}
+.detail-copy .kicker{font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.16em;color:#6E6E77;text-transform:uppercase;margin-bottom:1px}
+.note{display:flex;gap:8px;align-items:flex-start;font-size:10.2px;line-height:1.5;color:#9A9AA4}
+.note em{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:8px;color:var(--accent);opacity:.65;padding-top:2px;flex:none}
+
+.sheet{margin-top:20px;display:flex;flex-direction:column;gap:11px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between}
+.sheet-head .t{display:flex;align-items:baseline;gap:10px}
+.sheet-head b{font-size:13px;font-weight:500;color:#E2E2E8;letter-spacing:.02em}
+.sheet-head span{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.14em;color:#6D6D76;text-transform:uppercase}
+.grid16{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}
+.tile{position:relative;height:108px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border-radius:18px;background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.055)}
+.tile-no{position:absolute;top:8px;left:10px;font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.16)}
+.tile-ic{display:grid;place-items:center;height:38px;color:#D2D2DA}
+.tile-label{font-size:10px;color:#8B8B95;letter-spacing:.05em}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:12px;font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.16em;color:#4E4E57;text-transform:uppercase}
+.foot .mid{color:#5C5C66}
+.foot span{white-space:nowrap}
+</style></head>
+<body><div class="board c05">
+  <header class="head">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>Lumenshot · Icon Redesign <b>/ 2026</b></div>
+      <div class="titleline"><span class="idx">05</span><h1>等轴测</h1><span class="en">Isometric</span></div>
+      <p class="tagline">把工具放倒，让它们在 30° 网格上站起来。</p>
+      <p class="grammar">30° ISO PROJECTION / FACE + DEPTH / NO FLAT VIEW</p>
+    </div>
+    <div class="head-right">
+      <p class="desc">所有图标都使用同一套 30° 等轴测投影：平面变成菱形，厚度统一 2px。它不靠线条粗细制造层级，而靠“面”和“深度”区分前后，因此剪影是一组倾斜的积木。</p>
+      <div class="palette"><span class="plabel">共用色板</span><span class="sw"><i style="background:#A3F0CE"></i>#A3F0CE</span><span class="sw"><i style="background:#EDEDF0"></i>#EDEDF0</span><span class="sw"><i style="background:#8A8A93"></i>#8A8A93</span><span class="sw"><i style="background:#0B0C0E"></i>#0B0C0E</span></div>
+      <div class="kwrow"><span class="kw">等轴测</span><span class="kw">厚度</span><span class="kw">菱形</span><span class="kw">立体</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="app-col">
+      <div class="mini-label"><span>In Context / 真实界面</span><span>610 × 446</span></div>
+      <div class="app-scale"><div class="app">
+        <div class="app-top">
+          <div class="brand"><span class="mark"><svg class="ic" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="4.68,11.40 12.00,14.88 12.00,18.54 4.68,15.06" /><polygon points="12.00,14.88 19.32,11.40 19.32,15.06 12.00,18.54" /><polygon points="12.00,7.92 19.32,11.40 12.00,14.88 4.68,11.40" /><ellipse cx="12.00" cy="11.40" rx="5.4" ry="2.6"/><circle cx="12.00" cy="11.40" r="1.2" fill="currentColor" stroke="none"/></svg></span><span class="brand-name">Lumenshot</span></div>
+          <span class="status"><i></i>就绪</span><span class="grow"></span>
+          <span class="app-ghost"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="9.32,7.06 20.30,12.28 20.30,14.23 9.32,9.01" /><polygon points="20.30,12.28 22.37,11.29 22.37,13.24 20.30,14.23" /><polygon points="11.39,6.07 22.37,11.29 20.30,12.28 9.32,7.06" /><polygon points="6.14,6.37 17.12,11.59 17.12,13.54 6.14,8.32" /><polygon points="17.12,11.59 19.20,10.60 19.20,12.55 17.12,13.54" /><polygon points="8.22,5.38 19.20,10.60 17.12,11.59 6.14,6.37" /><polygon points="2.97,5.68 13.95,10.90 13.95,12.85 2.97,7.63" /><polygon points="13.95,10.90 16.03,9.91 16.03,11.87 13.95,12.85" /><polygon points="5.05,4.69 16.03,9.91 13.95,10.90 2.97,5.68" /></svg></span><span class="vsep"></span>
+          <div class="wctl"><span class="wc-min"></span><span class="wc-max"></span><span class="wc-close"></span></div>
+        </div>
+        <div class="stage"><div class="empty">
+          <div class="empty-orb"><svg class="ic" viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="2.24,16.22 12.00,20.86 12.00,21.84 2.24,17.20" /><polygon points="12.00,20.86 21.76,16.22 21.76,17.20 12.00,21.84" /><polygon points="12.00,11.58 21.76,16.22 12.00,20.86 2.24,16.22" /><polygon points="12.00,13.20 18.34,16.22 12.00,19.24 5.66,16.22" /><circle cx="12.00" cy="16.22" r="1.4" fill="currentColor" stroke="none"/></svg></div>
+          <h3>还没有截图</h3>
+          <p>选择一种方式开始，或按 <kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>A</kbd></p>
+        </div></div>
+        <div class="dock">
+          <button class="dock-btn labeled active"><svg class="ic" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="2.24,16.22 12.00,20.86 12.00,21.84 2.24,17.20" /><polygon points="12.00,20.86 21.76,16.22 21.76,17.20 12.00,21.84" /><polygon points="12.00,11.58 21.76,16.22 12.00,20.86 2.24,16.22" /><polygon points="12.00,13.20 18.34,16.22 12.00,19.24 5.66,16.22" /><circle cx="12.00" cy="16.22" r="1.4" fill="currentColor" stroke="none"/></svg><span>区域</span></button>
+          <button class="dock-btn labeled"><svg class="ic" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="17.49,12.63 16.39,13.16 16.39,6.81 17.49,6.29" /><polygon points="6.51,1.07 17.49,6.29 16.39,6.81 5.41,1.59" /><polygon points="6.51,7.41 17.49,12.63 17.49,6.29 6.51,1.07" /><polygon points="6.14,8.86 14.44,12.81 14.44,14.76 6.14,10.82" /><polygon points="14.44,12.81 16.15,12.00 16.15,13.95 14.44,14.76" /><polygon points="7.85,8.05 16.15,12.00 14.44,12.81 6.14,8.86" /><polyline points="6.51,2.90 17.49,8.12" /><polygon points="7.49,6.90 16.51,11.19 16.51,8.39 7.49,4.10" /><circle cx="8.34" cy="2.92" r="0.6" fill="currentColor" stroke="none"/><circle cx="10.05" cy="3.73" r="0.6" fill="currentColor" stroke="none"/></svg><span>窗口</span></button>
+          <button class="dock-btn labeled"><svg class="ic" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5.90,7.12 18.10,12.92 18.10,7.07 5.90,1.27" /><polygon points="5.90,1.27 18.10,7.07 17.00,7.59 4.80,1.79" /><polygon points="18.10,12.92 17.00,13.45 17.00,7.59 18.10,7.07" /><polygon points="7.24,6.79 16.76,11.31 16.76,7.53 7.24,3.00" /><polygon points="5.66,9.33 13.46,13.04 13.46,14.99 5.66,11.28" /><polygon points="13.46,13.04 15.66,12.00 15.66,13.95 13.46,14.99" /><polygon points="7.85,8.28 15.66,12.00 13.46,13.04 5.66,9.33" /></svg><span>整屏</span></button>
+          <span class="sep"></span>
+          <button class="dock-btn icon"><svg class="ic" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="2.24,9.84 14.44,15.64 14.44,17.59 2.24,11.79" /><polygon points="14.44,15.64 21.76,12.16 21.76,14.11 14.44,17.59" /><polygon points="9.56,6.36 21.76,12.16 14.44,15.64 2.24,9.84" /><polygon points="9.56,7.98 18.34,12.16 14.44,14.02 5.66,9.84" /></svg></button>
+          <button class="dock-btn icon"><svg class="ic" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12.00" cy="11.00" rx="8.4" ry="4"/><circle cx="12.00" cy="11.00" r="1.3" fill="currentColor" stroke="none"/></svg></button>
+          <button class="dock-btn icon"><svg class="ic" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3.22,8.22 12.98,12.86 12.98,14.81 3.22,10.17" /><polygon points="12.98,12.86 15.90,11.46 15.90,13.42 12.98,14.81" /><polygon points="6.14,6.82 15.90,11.46 12.98,12.86 3.22,8.22" /><polygon points="10.78,13.90 19.93,14.77 19.93,15.75 10.78,14.88" /><polygon points="19.93,14.77 18.10,10.42 18.10,11.40 19.93,15.75" /><polygon points="18.10,10.42 19.93,14.77 10.78,13.90" /></svg></button>
+          <button class="dock-btn icon"><svg class="ic" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.49,7.93 18.47,13.15 18.47,15.10 7.49,9.88" /><polygon points="18.47,13.15 21.15,11.87 21.15,13.82 18.47,15.10" /><polygon points="10.17,6.65 21.15,11.87 18.47,13.15 7.49,7.93" /><polygon points="2.12,14.42 4.80,15.70 4.80,17.65 2.12,16.37" /><polygon points="4.80,15.70 14.32,11.17 14.32,13.13 4.80,17.65" /><polygon points="11.63,9.90 14.32,11.17 4.80,15.70 2.12,14.42" /></svg></button>
+          <button class="dock-btn icon"><svg class="ic" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.12,6.13 12.00,8.45 12.00,10.40 7.12,8.08" /><polygon points="12.00,8.45 16.88,6.13 16.88,8.08 12.00,10.40" /><polygon points="12.00,3.81 16.88,6.13 12.00,8.45 7.12,6.13" /><polygon points="12.98,7.45 17.86,9.77 17.86,11.72 12.98,9.40" /><polygon points="17.86,9.77 22.74,7.45 22.74,9.40 17.86,11.72" /><polygon points="17.86,5.13 22.74,7.45 17.86,9.77 12.98,7.45" /><polygon points="1.26,6.23 6.14,8.55 6.14,10.50 1.26,8.18" /><polygon points="6.14,8.55 11.02,6.23 11.02,8.18 6.14,10.50" /><polygon points="6.14,3.91 11.02,6.23 6.14,8.55 1.26,6.23" /><polygon points="7.12,10.96 12.00,13.28 12.00,15.24 7.12,12.92" /><polygon points="12.00,13.28 16.88,10.96 16.88,12.92 12.00,15.24" /><polygon points="12.00,8.64 16.88,10.96 12.00,13.28 7.12,10.96" /></svg></button>
+          <button class="dock-btn icon"><svg class="ic" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1.02,11.00 12.00,16.22 12.00,17.20 1.02,11.98" /><polygon points="12.00,16.22 22.98,11.00 22.98,11.98 12.00,17.20" /><polygon points="12.00,5.78 22.98,11.00 12.00,16.22 1.02,11.00" /><polygon points="4.56,11.71 5.66,12.23 5.66,13.20 4.56,12.68" /><polygon points="5.66,12.23 16.64,7.01 16.64,7.98 5.66,13.20" /><polygon points="15.54,6.49 16.64,7.01 5.66,12.23 4.56,11.71" /><polygon points="7.36,13.04 8.46,13.56 8.46,14.54 7.36,14.02" /><polygon points="8.46,13.56 19.44,8.34 19.44,9.32 8.46,14.54" /><polygon points="18.34,7.82 19.44,8.34 8.46,13.56 7.36,13.04" /><polygon points="7.36,7.01 18.34,12.23 18.34,13.20 7.36,7.98" /><polygon points="18.34,12.23 19.44,11.71 19.44,12.68 18.34,13.20" /><polygon points="8.46,6.49 19.44,11.71 18.34,12.23 7.36,7.01" /><polygon points="4.56,8.34 15.54,13.56 15.54,14.54 4.56,9.32" /><polygon points="15.54,13.56 16.64,13.04 16.64,14.02 15.54,14.54" /><polygon points="5.66,7.82 16.64,13.04 15.54,13.56 4.56,8.34" /></svg></button>
+          <span class="sep"></span>
+          <button class="dock-btn icon"><svg class="ic" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1.02,11.00 12.00,16.22 12.00,17.20 1.02,11.98" /><polygon points="12.00,16.22 22.98,11.00 22.98,11.98 12.00,17.20" /><polygon points="12.00,5.78 22.98,11.00 12.00,16.22 1.02,11.00" /><polyline points="12.00,5.96 15.66,7.70 15.66,10.60 12.00,12.34 6.51,12.05 2.85,10.31" fill="none" stroke-width="1.8"/><polygon points="0.41,9.15 4.31,9.62 1.39,11.01" /></svg></button>
+          <button class="dock-btn icon"><svg class="ic" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1.02,11.00 12.00,16.22 12.00,17.20 1.02,11.98" /><polygon points="12.00,16.22 22.98,11.00 22.98,11.98 12.00,17.20" /><polygon points="12.00,5.78 22.98,11.00 12.00,16.22 1.02,11.00" /><polyline points="20.54,10.02 16.88,8.28 10.78,8.28 7.12,10.02 7.73,12.63 11.39,14.37" fill="none" stroke-width="1.8"/><polygon points="13.83,15.53 12.85,13.68 9.93,15.07" /></svg></button>
+        </div>
+      </div></div>
+    </section>
+
+    <aside class="side">
+      <div class="hero">
+        <div class="hero-tile"><svg class="ic" viewBox="0 0 24 24" width="66" height="66" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5.90,7.12 18.10,12.92 18.10,7.07 5.90,1.27" /><polygon points="5.90,1.27 18.10,7.07 17.00,7.59 4.80,1.79" /><polygon points="18.10,12.92 17.00,13.45 17.00,7.59 18.10,7.07" /><polygon points="7.24,6.79 16.76,11.31 16.76,7.53 7.24,3.00" /><polygon points="5.66,9.33 13.46,13.04 13.46,14.99 5.66,11.28" /><polygon points="13.46,13.04 15.66,12.00 15.66,13.95 13.46,14.99" /><polygon points="7.85,8.28 15.66,12.00 13.46,13.04 5.66,9.33" /></svg></div>
+        <div class="hero-meta"><span class="kicker">Construction Study</span><b>整屏截图 · Display</b><em>standing panel + base slab</em></div>
+        <span class="hero-no">05</span>
+      </div>
+      <div class="specs"><div class="spec"><span>投影</span><b>30° ISO</b></div><div class="spec"><span>线宽</span><b>1.50 px</b></div><div class="spec"><span>厚度</span><b>2.0 px</b></div><div class="spec"><span>面数</span><b>2–3</b></div><div class="spec"><span>平面</span><b>禁用</b></div><div class="spec"><span>最小尺寸</span><b>18 px</b></div></div>
+      <div class="sil">
+        <div class="sil-head"><span>Silhouette / 剪影测试</span><span>去掉颜色与材质后仍能区分</span></div>
+        <div class="sil-row sil-dark"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="4.68,11.40 12.00,14.88 12.00,18.54 4.68,15.06" /><polygon points="12.00,14.88 19.32,11.40 19.32,15.06 12.00,18.54" /><polygon points="12.00,7.92 19.32,11.40 12.00,14.88 4.68,11.40" /><ellipse cx="12.00" cy="11.40" rx="5.4" ry="2.6"/><circle cx="12.00" cy="11.40" r="1.2" fill="currentColor" stroke="none"/></svg><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="2.24,16.22 12.00,20.86 12.00,21.84 2.24,17.20" /><polygon points="12.00,20.86 21.76,16.22 21.76,17.20 12.00,21.84" /><polygon points="12.00,11.58 21.76,16.22 12.00,20.86 2.24,16.22" /><polygon points="12.00,13.20 18.34,16.22 12.00,19.24 5.66,16.22" /><circle cx="12.00" cy="16.22" r="1.4" fill="currentColor" stroke="none"/></svg><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="2.24,9.84 14.44,15.64 14.44,17.59 2.24,11.79" /><polygon points="14.44,15.64 21.76,12.16 21.76,14.11 14.44,17.59" /><polygon points="9.56,6.36 21.76,12.16 14.44,15.64 2.24,9.84" /><polygon points="9.56,7.98 18.34,12.16 14.44,14.02 5.66,9.84" /></svg><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3.22,8.22 12.98,12.86 12.98,14.81 3.22,10.17" /><polygon points="12.98,12.86 15.90,11.46 15.90,13.42 12.98,14.81" /><polygon points="6.14,6.82 15.90,11.46 12.98,12.86 3.22,8.22" /><polygon points="10.78,13.90 19.93,14.77 19.93,15.75 10.78,14.88" /><polygon points="19.93,14.77 18.10,10.42 18.10,11.40 19.93,15.75" /><polygon points="18.10,10.42 19.93,14.77 10.78,13.90" /></svg><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.49,7.93 18.47,13.15 18.47,15.10 7.49,9.88" /><polygon points="18.47,13.15 21.15,11.87 21.15,13.82 18.47,15.10" /><polygon points="10.17,6.65 21.15,11.87 18.47,13.15 7.49,7.93" /><polygon points="2.12,14.42 4.80,15.70 4.80,17.65 2.12,16.37" /><polygon points="4.80,15.70 14.32,11.17 14.32,13.13 4.80,17.65" /><polygon points="11.63,9.90 14.32,11.17 4.80,15.70 2.12,14.42" /></svg><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="-0.20,11.58 10.78,16.80 10.78,18.75 -0.20,13.53" /><polygon points="10.78,16.80 15.66,14.48 15.66,16.43 10.78,18.75" /><polygon points="4.68,9.26 15.66,14.48 10.78,16.80 -0.20,11.58" /><polygon points="11.02,6.63 12.98,7.56 12.98,8.54 11.02,7.61" /><polygon points="12.98,7.56 17.86,5.24 17.86,6.22 12.98,8.54" /><polygon points="15.90,4.31 17.86,5.24 12.98,7.56 11.02,6.63" /><polygon points="8.95,5.65 8.83,8.60 8.83,9.58 8.95,6.62" /><polygon points="8.83,8.60 15.05,8.55 15.05,9.52 8.83,9.58" /><polygon points="8.95,5.65 15.05,8.55 8.83,8.60" /></svg></div>
+        <div class="sil-row sil-light"><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="4.68,11.40 12.00,14.88 12.00,18.54 4.68,15.06" /><polygon points="12.00,14.88 19.32,11.40 19.32,15.06 12.00,18.54" /><polygon points="12.00,7.92 19.32,11.40 12.00,14.88 4.68,11.40" /><ellipse cx="12.00" cy="11.40" rx="5.4" ry="2.6"/><circle cx="12.00" cy="11.40" r="1.2" fill="currentColor" stroke="none"/></svg><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="2.24,16.22 12.00,20.86 12.00,21.84 2.24,17.20" /><polygon points="12.00,20.86 21.76,16.22 21.76,17.20 12.00,21.84" /><polygon points="12.00,11.58 21.76,16.22 12.00,20.86 2.24,16.22" /><polygon points="12.00,13.20 18.34,16.22 12.00,19.24 5.66,16.22" /><circle cx="12.00" cy="16.22" r="1.4" fill="currentColor" stroke="none"/></svg><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="2.24,9.84 14.44,15.64 14.44,17.59 2.24,11.79" /><polygon points="14.44,15.64 21.76,12.16 21.76,14.11 14.44,17.59" /><polygon points="9.56,6.36 21.76,12.16 14.44,15.64 2.24,9.84" /><polygon points="9.56,7.98 18.34,12.16 14.44,14.02 5.66,9.84" /></svg><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3.22,8.22 12.98,12.86 12.98,14.81 3.22,10.17" /><polygon points="12.98,12.86 15.90,11.46 15.90,13.42 12.98,14.81" /><polygon points="6.14,6.82 15.90,11.46 12.98,12.86 3.22,8.22" /><polygon points="10.78,13.90 19.93,14.77 19.93,15.75 10.78,14.88" /><polygon points="19.93,14.77 18.10,10.42 18.10,11.40 19.93,15.75" /><polygon points="18.10,10.42 19.93,14.77 10.78,13.90" /></svg><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.49,7.93 18.47,13.15 18.47,15.10 7.49,9.88" /><polygon points="18.47,13.15 21.15,11.87 21.15,13.82 18.47,15.10" /><polygon points="10.17,6.65 21.15,11.87 18.47,13.15 7.49,7.93" /><polygon points="2.12,14.42 4.80,15.70 4.80,17.65 2.12,16.37" /><polygon points="4.80,15.70 14.32,11.17 14.32,13.13 4.80,17.65" /><polygon points="11.63,9.90 14.32,11.17 4.80,15.70 2.12,14.42" /></svg><svg class="ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="-0.20,11.58 10.78,16.80 10.78,18.75 -0.20,13.53" /><polygon points="10.78,16.80 15.66,14.48 15.66,16.43 10.78,18.75" /><polygon points="4.68,9.26 15.66,14.48 10.78,16.80 -0.20,11.58" /><polygon points="11.02,6.63 12.98,7.56 12.98,8.54 11.02,7.61" /><polygon points="12.98,7.56 17.86,5.24 17.86,6.22 12.98,8.54" /><polygon points="15.90,4.31 17.86,5.24 12.98,7.56 11.02,6.63" /><polygon points="8.95,5.65 8.83,8.60 8.83,9.58 8.95,6.62" /><polygon points="8.83,8.60 15.05,8.55 15.05,9.52 8.83,9.58" /><polygon points="8.95,5.65 15.05,8.55 8.83,8.60" /></svg></div>
+      </div>
+      <div class="detail">
+        <div class="detail-art"><span class="detail-ic"><svg class="ic" viewBox="0 0 24 24" width="84" height="84" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5.90,7.12 18.10,12.92 18.10,7.07 5.90,1.27" /><polygon points="5.90,1.27 18.10,7.07 17.00,7.59 4.80,1.79" /><polygon points="18.10,12.92 17.00,13.45 17.00,7.59 18.10,7.07" /><polygon points="7.24,6.79 16.76,11.31 16.76,7.53 7.24,3.00" /><polygon points="5.66,9.33 13.46,13.04 13.46,14.99 5.66,11.28" /><polygon points="13.46,13.04 15.66,12.00 15.66,13.95 13.46,14.99" /><polygon points="7.85,8.28 15.66,12.00 13.46,13.04 5.66,9.33" /></svg></span><span class="detail-tag">Iso Panel</span></div>
+        <div class="detail-copy"><span class="kicker">造形规则 / Rules</span>
+          <div class="note"><em>01</em><span>统一 30° 等轴测投影，不混用平面视图</span></div><div class="note"><em>02</em><span>每个形体保留 2px 厚度，方向一致</span></div><div class="note"><em>03</em><span>不画隐藏边，靠面与面的明暗区分</span></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <section class="sheet">
+    <div class="sheet-head"><div class="t"><b>完整图标组</b><span>16 icons / one construction language</span></div><span>34 px 展示 · 15–17 px 实用</span></div>
+    <div class="grid16">
+      <div class="tile"><span class="tile-no">01</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="4.68,11.40 12.00,14.88 12.00,18.54 4.68,15.06" /><polygon points="12.00,14.88 19.32,11.40 19.32,15.06 12.00,18.54" /><polygon points="12.00,7.92 19.32,11.40 12.00,14.88 4.68,11.40" /><ellipse cx="12.00" cy="11.40" rx="5.4" ry="2.6"/><circle cx="12.00" cy="11.40" r="1.2" fill="currentColor" stroke="none"/></svg></div>
+        <span class="tile-label">主标识</span>
+      </div>
+      <div class="tile"><span class="tile-no">02</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="2.24,16.22 12.00,20.86 12.00,21.84 2.24,17.20" /><polygon points="12.00,20.86 21.76,16.22 21.76,17.20 12.00,21.84" /><polygon points="12.00,11.58 21.76,16.22 12.00,20.86 2.24,16.22" /><polygon points="12.00,13.20 18.34,16.22 12.00,19.24 5.66,16.22" /><circle cx="12.00" cy="16.22" r="1.4" fill="currentColor" stroke="none"/></svg></div>
+        <span class="tile-label">区域截图</span>
+      </div>
+      <div class="tile"><span class="tile-no">03</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="17.49,12.63 16.39,13.16 16.39,6.81 17.49,6.29" /><polygon points="6.51,1.07 17.49,6.29 16.39,6.81 5.41,1.59" /><polygon points="6.51,7.41 17.49,12.63 17.49,6.29 6.51,1.07" /><polygon points="6.14,8.86 14.44,12.81 14.44,14.76 6.14,10.82" /><polygon points="14.44,12.81 16.15,12.00 16.15,13.95 14.44,14.76" /><polygon points="7.85,8.05 16.15,12.00 14.44,12.81 6.14,8.86" /><polyline points="6.51,2.90 17.49,8.12" /><polygon points="7.49,6.90 16.51,11.19 16.51,8.39 7.49,4.10" /><circle cx="8.34" cy="2.92" r="0.6" fill="currentColor" stroke="none"/><circle cx="10.05" cy="3.73" r="0.6" fill="currentColor" stroke="none"/></svg></div>
+        <span class="tile-label">窗口截图</span>
+      </div>
+      <div class="tile"><span class="tile-no">04</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5.90,7.12 18.10,12.92 18.10,7.07 5.90,1.27" /><polygon points="5.90,1.27 18.10,7.07 17.00,7.59 4.80,1.79" /><polygon points="18.10,12.92 17.00,13.45 17.00,7.59 18.10,7.07" /><polygon points="7.24,6.79 16.76,11.31 16.76,7.53 7.24,3.00" /><polygon points="5.66,9.33 13.46,13.04 13.46,14.99 5.66,11.28" /><polygon points="13.46,13.04 15.66,12.00 15.66,13.95 13.46,14.99" /><polygon points="7.85,8.28 15.66,12.00 13.46,13.04 5.66,9.33" /></svg></div>
+        <span class="tile-label">整屏截图</span>
+      </div>
+      <div class="tile"><span class="tile-no">05</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="2.24,9.84 14.44,15.64 14.44,17.59 2.24,11.79" /><polygon points="14.44,15.64 21.76,12.16 21.76,14.11 14.44,17.59" /><polygon points="9.56,6.36 21.76,12.16 14.44,15.64 2.24,9.84" /><polygon points="9.56,7.98 18.34,12.16 14.44,14.02 5.66,9.84" /></svg></div>
+        <span class="tile-label">矩形</span>
+      </div>
+      <div class="tile"><span class="tile-no">06</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12.00" cy="11.00" rx="8.4" ry="4"/><circle cx="12.00" cy="11.00" r="1.3" fill="currentColor" stroke="none"/></svg></div>
+        <span class="tile-label">椭圆</span>
+      </div>
+      <div class="tile"><span class="tile-no">07</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3.22,8.22 12.98,12.86 12.98,14.81 3.22,10.17" /><polygon points="12.98,12.86 15.90,11.46 15.90,13.42 12.98,14.81" /><polygon points="6.14,6.82 15.90,11.46 12.98,12.86 3.22,8.22" /><polygon points="10.78,13.90 19.93,14.77 19.93,15.75 10.78,14.88" /><polygon points="19.93,14.77 18.10,10.42 18.10,11.40 19.93,15.75" /><polygon points="18.10,10.42 19.93,14.77 10.78,13.90" /></svg></div>
+        <span class="tile-label">箭头</span>
+      </div>
+      <div class="tile"><span class="tile-no">08</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.49,7.93 18.47,13.15 18.47,15.10 7.49,9.88" /><polygon points="18.47,13.15 21.15,11.87 21.15,13.82 18.47,15.10" /><polygon points="10.17,6.65 21.15,11.87 18.47,13.15 7.49,7.93" /><polygon points="2.12,14.42 4.80,15.70 4.80,17.65 2.12,16.37" /><polygon points="4.80,15.70 14.32,11.17 14.32,13.13 4.80,17.65" /><polygon points="11.63,9.90 14.32,11.17 4.80,15.70 2.12,14.42" /></svg></div>
+        <span class="tile-label">文字</span>
+      </div>
+      <div class="tile"><span class="tile-no">09</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.12,6.13 12.00,8.45 12.00,10.40 7.12,8.08" /><polygon points="12.00,8.45 16.88,6.13 16.88,8.08 12.00,10.40" /><polygon points="12.00,3.81 16.88,6.13 12.00,8.45 7.12,6.13" /><polygon points="12.98,7.45 17.86,9.77 17.86,11.72 12.98,9.40" /><polygon points="17.86,9.77 22.74,7.45 22.74,9.40 17.86,11.72" /><polygon points="17.86,5.13 22.74,7.45 17.86,9.77 12.98,7.45" /><polygon points="1.26,6.23 6.14,8.55 6.14,10.50 1.26,8.18" /><polygon points="6.14,8.55 11.02,6.23 11.02,8.18 6.14,10.50" /><polygon points="6.14,3.91 11.02,6.23 6.14,8.55 1.26,6.23" /><polygon points="7.12,10.96 12.00,13.28 12.00,15.24 7.12,12.92" /><polygon points="12.00,13.28 16.88,10.96 16.88,12.92 12.00,15.24" /><polygon points="12.00,8.64 16.88,10.96 12.00,13.28 7.12,10.96" /></svg></div>
+        <span class="tile-label">马赛克</span>
+      </div>
+      <div class="tile"><span class="tile-no">10</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1.02,11.00 12.00,16.22 12.00,17.20 1.02,11.98" /><polygon points="12.00,16.22 22.98,11.00 22.98,11.98 12.00,17.20" /><polygon points="12.00,5.78 22.98,11.00 12.00,16.22 1.02,11.00" /><polygon points="4.56,11.71 5.66,12.23 5.66,13.20 4.56,12.68" /><polygon points="5.66,12.23 16.64,7.01 16.64,7.98 5.66,13.20" /><polygon points="15.54,6.49 16.64,7.01 5.66,12.23 4.56,11.71" /><polygon points="7.36,13.04 8.46,13.56 8.46,14.54 7.36,14.02" /><polygon points="8.46,13.56 19.44,8.34 19.44,9.32 8.46,14.54" /><polygon points="18.34,7.82 19.44,8.34 8.46,13.56 7.36,13.04" /><polygon points="7.36,7.01 18.34,12.23 18.34,13.20 7.36,7.98" /><polygon points="18.34,12.23 19.44,11.71 19.44,12.68 18.34,13.20" /><polygon points="8.46,6.49 19.44,11.71 18.34,12.23 7.36,7.01" /><polygon points="4.56,8.34 15.54,13.56 15.54,14.54 4.56,9.32" /><polygon points="15.54,13.56 16.64,13.04 16.64,14.02 15.54,14.54" /><polygon points="5.66,7.82 16.64,13.04 15.54,13.56 4.56,8.34" /></svg></div>
+        <span class="tile-label">网格</span>
+      </div>
+      <div class="tile"><span class="tile-no">11</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1.02,11.00 12.00,16.22 12.00,17.20 1.02,11.98" /><polygon points="12.00,16.22 22.98,11.00 22.98,11.98 12.00,17.20" /><polygon points="12.00,5.78 22.98,11.00 12.00,16.22 1.02,11.00" /><polyline points="12.00,5.96 15.66,7.70 15.66,10.60 12.00,12.34 6.51,12.05 2.85,10.31" fill="none" stroke-width="1.8"/><polygon points="0.41,9.15 4.31,9.62 1.39,11.01" /></svg></div>
+        <span class="tile-label">撤销</span>
+      </div>
+      <div class="tile"><span class="tile-no">12</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1.02,11.00 12.00,16.22 12.00,17.20 1.02,11.98" /><polygon points="12.00,16.22 22.98,11.00 22.98,11.98 12.00,17.20" /><polygon points="12.00,5.78 22.98,11.00 12.00,16.22 1.02,11.00" /><polyline points="20.54,10.02 16.88,8.28 10.78,8.28 7.12,10.02 7.73,12.63 11.39,14.37" fill="none" stroke-width="1.8"/><polygon points="13.83,15.53 12.85,13.68 9.93,15.07" /></svg></div>
+        <span class="tile-label">重做</span>
+      </div>
+      <div class="tile"><span class="tile-no">13</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5.90,11.00 12.00,13.90 12.00,15.85 5.90,12.95" /><polygon points="12.00,13.90 18.10,11.00 18.10,12.95 12.00,15.85" /><polygon points="12.00,8.10 18.10,11.00 12.00,13.90 5.90,11.00" /><path d="M12 7.8V11.2"/><circle cx="12" cy="4.656" r="3.2"/><circle cx="12.00" cy="4.66" r="1" fill="currentColor" stroke="none"/></svg></div>
+        <span class="tile-label">置顶</span>
+      </div>
+      <div class="tile"><span class="tile-no">14</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="2.24,10.42 10.78,14.48 10.78,16.43 2.24,12.37" /><polygon points="10.78,14.48 16.88,11.58 16.88,13.53 10.78,16.43" /><polygon points="8.34,7.52 16.88,11.58 10.78,14.48 2.24,10.42" /><polygon points="1.63,10.25 10.17,14.31 10.17,16.27 1.63,12.21" /><polygon points="10.17,14.31 16.27,11.41 16.27,13.37 10.17,16.27" /><polygon points="7.73,7.35 16.27,11.41 10.17,14.31 1.63,10.25" /></svg></div>
+        <span class="tile-label">复制</span>
+      </div>
+      <div class="tile"><span class="tile-no">15</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="-0.20,11.58 10.78,16.80 10.78,18.75 -0.20,13.53" /><polygon points="10.78,16.80 15.66,14.48 15.66,16.43 10.78,18.75" /><polygon points="4.68,9.26 15.66,14.48 10.78,16.80 -0.20,11.58" /><polygon points="11.02,6.63 12.98,7.56 12.98,8.54 11.02,7.61" /><polygon points="12.98,7.56 17.86,5.24 17.86,6.22 12.98,8.54" /><polygon points="15.90,4.31 17.86,5.24 12.98,7.56 11.02,6.63" /><polygon points="8.95,5.65 8.83,8.60 8.83,9.58 8.95,6.62" /><polygon points="8.83,8.60 15.05,8.55 15.05,9.52 8.83,9.58" /><polygon points="8.95,5.65 15.05,8.55 8.83,8.60" /></svg></div>
+        <span class="tile-label">保存</span>
+      </div>
+      <div class="tile"><span class="tile-no">16</span>
+        <div class="tile-ic"><svg class="ic" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="9.32,7.06 20.30,12.28 20.30,14.23 9.32,9.01" /><polygon points="20.30,12.28 22.37,11.29 22.37,13.24 20.30,14.23" /><polygon points="11.39,6.07 22.37,11.29 20.30,12.28 9.32,7.06" /><polygon points="6.14,6.37 17.12,11.59 17.12,13.54 6.14,8.32" /><polygon points="17.12,11.59 19.20,10.60 19.20,12.55 17.12,13.54" /><polygon points="8.22,5.38 19.20,10.60 17.12,11.59 6.14,6.37" /><polygon points="2.97,5.68 13.95,10.90 13.95,12.85 2.97,7.63" /><polygon points="13.95,10.90 16.03,9.91 16.03,11.87 13.95,12.85" /><polygon points="5.05,4.69 16.03,9.91 13.95,10.90 2.97,5.68" /></svg></div>
+        <span class="tile-label">菜单</span>
+      </div></div>
+  </section>
+
+  <footer class="foot">
+    <span>Lumenshot · Icon Redesign / 10 Constructions</span>
+    <span class="mid">Same UI · Same palette · Different geometry</span>
+    <span>05 / 10 · Isometric</span>
+  </footer>
+</div></body></html>
