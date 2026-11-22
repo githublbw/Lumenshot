@@ -3403,11 +3403,7 @@ public:
         }
         connect(&hotkey, &Hotkey::triggered, this, [this]{ Dispatch("region"); });
         hotkeyRegion.bind("F1");
-        hotkeyWindow.bind("F2");
-        hotkeyScreen.bind("F3");
         connect(&hotkeyRegion, &Hotkey::triggered, this, [this]{ Dispatch("region"); });
-        connect(&hotkeyWindow, &Hotkey::triggered, this, [this]{ Dispatch("window"); });
-        connect(&hotkeyScreen, &Hotkey::triggered, this, [this]{ Dispatch("screen"); });
         auto *menu = new QMenu(this);
         menu->addAction("打开工作台", this, &Panel::Present)->setIcon(iconTint("focus", kIcon, 16));
         menu->addSeparator();
@@ -3416,14 +3412,12 @@ public:
         regionAction->setShortcut(QKeySequence(Qt::Key_F1));
         auto *screenAction = menu->addAction("整屏截图", this, [this]{ Dispatch("screen"); });
         screenAction->setIcon(iconTint("monitor", kIcon, 16));
-        screenAction->setShortcut(QKeySequence(Qt::Key_F3));
         auto *windowAction = menu->addAction("窗口截图", this, [this]{ Dispatch("window"); });
         windowAction->setIcon(iconTint("focus", kIcon, 16));
-        windowAction->setShortcut(QKeySequence(Qt::Key_F2));
         // 菜单弹出期间会抓走键盘，X11 全局快捷键收不到按键，这里用应用级快捷键补上；
         // 菜单关闭时按键由全局抓键接管（不会到达 Qt），因此不会重复触发。
         const struct { const char *keys; const char *command; } menuShortcuts[] = {
-            {"F1", "region"}, {"F2", "window"}, {"F3", "screen"},
+            {"F1", "region"},
         };
         for (const auto &entry : menuShortcuts) {
             auto *shortcut = new QShortcut(QKeySequence(entry.keys), menu);
@@ -3700,8 +3694,6 @@ private:
     QString hint;
     Hotkey hotkey;
     Hotkey hotkeyRegion;
-    Hotkey hotkeyWindow;
-    Hotkey hotkeyScreen;
     bool registered = false;
     QSystemTrayIcon tray;
     QPointer<PinnedPreview> pinned;

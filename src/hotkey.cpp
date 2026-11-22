@@ -24,10 +24,9 @@ bool Hotkey::bind(const QString &choice)
     }
     const uint32_t symbol =
         choice == "Ctrl+Alt+A" ? 'a' : choice == "Ctrl+Alt+S" ? 's' :
-        choice == "Ctrl+Alt+F8" ? 0xffc5 : choice == "F1" ? 0xffbe :
-        choice == "F2" ? 0xffbf : choice == "F3" ? 0xffc0 : 0;
+        choice == "Ctrl+Alt+F8" ? 0xffc5 : choice == "F1" ? 0xffbe : 0;
     if (!symbol || qEnvironmentVariable("XDG_SESSION_TYPE") != "x11") return false;
-    const bool functionKey = choice == "F1" || choice == "F2" || choice == "F3";
+    const bool functionKey = choice == "F1";
     const uint16_t modifiers = functionKey ? 0 : (XCB_MOD_MASK_CONTROL | XCB_MOD_MASK_1);
     int screen = 0;
     std::unique_ptr<Binding> next(new Binding{xcb_connect(nullptr, &screen), {}});

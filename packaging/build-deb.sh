@@ -54,7 +54,7 @@ Maintainer: Lumenshot <lumenshot@localhost>
 Depends: libx11-6, libxcb1, libicu70, libfontconfig1, libfreetype6, libglib2.0-0, libpng16-16, libbrotli1
 Installed-Size: $installed_size
 Description: 离线截图工作台（区域/窗口/整屏、标注、OCR、贴图）
- 基于 Qt6 的 X11 截图工具：全局热键 F1/F2/F3、原地浮动卡片标注、
+ 基于 Qt6 的 X11 截图工具：全局热键 F1、原地浮动卡片标注、
  画笔与马赛克笔刷、对话气泡、离线 OCR 文字识别、置顶贴图。
  .
  自带私有 Qt 运行库与 OCR 模型，识别与保存均在本机完成，不联网。
