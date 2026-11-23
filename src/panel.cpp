@@ -1740,7 +1740,21 @@ protected:
                 p.setPen(QPen(Qt::white, 0, Qt::DashLine));
                 p.setBrush(Qt::NoBrush);
                 p.drawRect(draft());
-            } else if (shape == MaskShape::Ellipse) p.drawEllipse(draft());
+            } else if (shape == MaskShape::Ellipse || shape == MaskShape::Rectangle
+                       || shape == MaskShape::RoundedRect) {
+                // 与最终效果一致：空心描边预览
+                p.setPen(QPen(color, std::clamp(toolSize * 0.2, 2.5, 5.0)));
+                p.setBrush(Qt::NoBrush);
+                if (shape == MaskShape::Ellipse) {
+                    p.drawEllipse(draft());
+                } else if (shape == MaskShape::Rectangle) {
+                    p.drawRect(draft());
+                } else {
+                    const QRectF r = draft();
+                    const qreal rad = std::clamp(std::min(r.width(), r.height()) * 0.14, 4.0, 18.0);
+                    p.drawRoundedRect(r, rad, rad);
+                }
+            }
             else p.drawRect(draft());
             p.restore();
 

@@ -82,16 +82,22 @@ void Masks::apply(const Step &step)
         }
         return;
     }
-    if (step.shape == MaskShape::RoundedRect) {
+    if (step.shape == MaskShape::Rectangle || step.shape == MaskShape::Ellipse
+        || step.shape == MaskShape::RoundedRect) {
+        // 空心描边：只画边框线条，内部保持透明，露出原始截图内容。
         QPainter p(&output);
         p.setRenderHint(QPainter::Antialiasing);
-        const QRectF r(step.pixels);
-        const qreal rad = std::clamp(std::min(r.width(), r.height()) * 0.14, 4.0, 18.0);
-        QColor border = step.color;
-        border.setAlpha(255);
-        p.setPen(QPen(border, 1.6));
-        p.setBrush(step.color);
-        p.drawRoundedRect(r, rad, rad);
+        p.setPen(QPen(step.color, std::clamp(step.size * 0.2, 2.5, 5.0)));
+        p.setBrush(Qt::NoBrush);
+        if (step.shape == MaskShape::Rectangle) {
+            p.drawRect(QRectF(step.pixels));
+        } else if (step.shape == MaskShape::Ellipse) {
+            p.drawEllipse(QRectF(step.pixels));
+        } else {
+            const QRectF r(step.pixels);
+            const qreal rad = std::clamp(std::min(r.width(), r.height()) * 0.14, 4.0, 18.0);
+            p.drawRoundedRect(r, rad, rad);
+        }
         return;
     }
     if (step.shape == MaskShape::Bubble) {
@@ -150,6 +156,16 @@ void Masks::apply(const Step &step)
         p.setPen(Qt::NoPen);
         p.setBrush(step.color);
         p.drawPath(glyph);
+        return;
+    }
+    if (step.shape == MaskShape::Rectangle || step.shape == MaskShape::Ellipse) {
+        // 空心描边：只画边框线条，内部保持透明，露出原始截图内容。
+        QPainter p(&output);
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setPen(QPen(step.color, std::clamp(step.size * 0.2, 2.5, 5.0)));
+        p.setBrush(Qt::NoBrush);
+        if (step.shape == MaskShape::Rectangle) p.drawRect(QRectF(step.pixels));
+        else p.drawEllipse(QRectF(step.pixels));
         return;
     }
     QPainter painter(&output);
@@ -331,15 +347,16 @@ void Masks::paintStep(QPainter &painter, int index, const QPointF &offset) const
     }
     painter.setPen(Qt::NoPen);
     painter.setBrush(step.color);
-    if (step.shape == MaskShape::Rectangle)
-        painter.fillRect(QRectF(step.pixels), step.color);
-    else if (step.shape == MaskShape::RoundedRect) {
+    if (step.shape == MaskShape::Rectangle || step.shape == MaskShape::Ellipse) {
+        painter.setPen(QPen(step.color, std::clamp(step.size * 0.2, 2.5, 5.0)));
+        painter.setBrush(Qt::NoBrush);
+        if (step.shape == MaskShape::Rectangle) painter.drawRect(QRectF(step.pixels));
+        else painter.drawEllipse(QRectF(step.pixels));
+    } else if (step.shape == MaskShape::RoundedRect) {
         const QRectF r(step.pixels);
         const qreal rad = std::clamp(std::min(r.width(), r.height()) * 0.14, 4.0, 18.0);
-        QColor border = step.color;
-        border.setAlpha(255);
-        painter.setPen(QPen(border, 1.6));
-        painter.setBrush(step.color);
+        painter.setPen(QPen(step.color, std::clamp(step.size * 0.2, 2.5, 5.0)));
+        painter.setBrush(Qt::NoBrush);
         painter.drawRoundedRect(r, rad, rad);
     } else if (step.shape == MaskShape::Bubble) {
         const QRectF r(step.pixels);

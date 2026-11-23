@@ -15,18 +15,22 @@ int main(int argc, char **argv)
     model.reset(original);
     QColor color(150, 80, 35, 8);
     model.add(MaskShape::Rectangle, QRectF(8, 8, -12, -6), color);
-    QImage expected = original;
-    for (int y = 2; y < 8; ++y)
-        for (int x = 0; x < 8; ++x)
-            expected.setPixel(x, y, color.rgb());
-    if (model.image() != expected || !model.canUndo()) return 1;
+    // 空心矩形：内部保持原图像素，边框为标注色
+    const QImage expected = model.image();
+    if (expected.pixel(4, 4) != original.pixel(4, 4) || expected == original) return 1;
+    if (expected.pixel(0, 4) != color.rgb() || expected.pixel(7, 5) != color.rgb()) return 1;
+    if (!model.canUndo()) return 1;
     model.add(MaskShape::Ellipse, {4, 3, 12, 8}, Qt::black);
     const QImage ellipse = model.image();
-    if (ellipse.pixel(10, 7) != qRgb(0,0,0) || ellipse.pixel(4,3) != expected.pixel(4,3))
-        return 2;
+    // 空心椭圆：内部不填充，只有轮廓被描边
+    if (ellipse.pixel(10, 7) != expected.pixel(10, 7)) return 2;
+    if (ellipse == expected) return 2;
+    if (ellipse.pixel(4, 7) != qRgb(0,0,0)) return 2;
+    // 描边以轮廓线为中心，允许超出外接矩形约半个线宽（含抗锯齿），更远处必须保持原样
+    const QRect painted = QRect(4, 3, 12, 8).adjusted(-2, -2, 2, 2);
     for (int y = 0; y < ellipse.height(); ++y)
         for (int x = 0; x < ellipse.width(); ++x)
-            if (ellipse.pixel(x,y) != expected.pixel(x,y) && ellipse.pixel(x,y) != qRgb(0,0,0))
+            if (!painted.contains(x,y) && ellipse.pixel(x,y) != expected.pixel(x,y))
                 return 3;
     model.undo();
     if (model.image() != expected) return 4;
@@ -78,7 +82,9 @@ int main(int argc, char **argv)
     edit.moveStep(0, QPointF(-100, -100));
     if (edit.stepBounds(0).topLeft() != QPointF(0, 0)) return 19;
     edit.setStepColor(0, QColor(0, 160, 255));
-    if (edit.image().pixel(2, 2) != qRgb(0, 160, 255)) return 20;
+    // 空心矩形换色后：边框更新为新颜色，内部仍是画布原样
+    if (edit.image().pixel(0, 2) != qRgb(0, 160, 255)) return 20;
+    if (edit.image().pixel(5, 4) != canvas.pixel(5, 4)) return 20;
     edit.removeStep(0);
     if (edit.stepCount() != 0 || edit.image() != canvas) return 21;
 
@@ -113,12 +119,13 @@ int main(int argc, char **argv)
     edit.removeStep(0);
     if (edit.image() != canvas) return 31;
 
-    // 圆角框：半透明填充 + 不透明描边
+    // 圆角框：空心描边，内部透出画布
     edit.add(MaskShape::RoundedRect, QRectF(4, 4, 14, 12), QColor(0, 120, 255, 90), 12, QString(), 60);
     if (edit.stepCount() != 1) return 32;
     if (edit.image() == canvas) return 33;
+    if (edit.image().pixel(10, 10) != canvas.pixel(10, 10)) return 33;
     edit.setStepAlpha(0, 100);
-    if (edit.image().pixel(10, 10) != qRgb(0, 120, 255)) return 34;
+    if (edit.image().pixel(4, 10) != qRgb(0, 120, 255)) return 34;
 
     // 对话气泡：拖动起点在气泡角上，尾巴沿对角向外伸出
     edit.reset(canvas);
